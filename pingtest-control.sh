@@ -1,6 +1,6 @@
 #!/bin/sh
 # Auto Ping Control by juicewrt
-VERSION="v1.3.3"
+VERSION="v1.3.4"
 
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
@@ -28,8 +28,17 @@ stop_pingtest() {
     screen -wipe >/dev/null 2>&1
 }
 
+# --- Fungsi: perbaiki shebang otomatis jika hilang ---
+fix_shebang() {
+    if ! grep -q "^#!/bin/sh" /root/pingtest.sh 2>/dev/null; then
+        echo "[!] Shebang hilang, menambahkan ulang..."
+        sed -i '1i#!/bin/sh' /root/pingtest.sh
+    fi
+}
+
 case "$1" in
 start)
+    fix_shebang
     TARGET=$(get_target)
     if pgrep -f "pingtest.sh" >/dev/null 2>&1; then
         echo "Pingtest sudah berjalan (target: $TARGET)."
@@ -50,6 +59,7 @@ stop)
     fi
     ;;
 status)
+    fix_shebang
     echo "[ Auto Ping Status ]"
     PID=$(pgrep -f "pingtest.sh")
     TARGET=$(get_target)
@@ -64,6 +74,7 @@ status)
     fi
     ;;
 check)
+    fix_shebang
     echo "[ Auto Ping Status + Log ]"
     PID=$(pgrep -f "pingtest.sh")
     TARGET=$(get_target)
@@ -82,9 +93,14 @@ update)
     wget -q -O /root/pingtest.sh $REPO_URL/pingtest.sh
     wget -q -O /root/pingtest-control.sh $REPO_URL/pingtest-control.sh
     chmod +x /root/pingtest.sh /root/pingtest-control.sh
+
+    # Auto perbaiki shebang kalau hilang
+    fix_shebang
+
     if ! grep -q "pingtest-control.sh" $PROFILE 2>/dev/null; then
         echo "alias pingtest='/root/pingtest-control.sh'" >> $PROFILE
     fi
+
     echo "[✓] Update selesai! Versi terbaru sudah diinstal."
     ;;
 m)
@@ -93,6 +109,7 @@ m)
 
     while true; do
         clear
+        fix_shebang
         CURRENT_TARGET=$(get_target)
         PID=$(pgrep -f "pingtest.sh")
         [ -n "$PID" ] && STATUS="${GREEN}AKTIF${NC}" || STATUS="${RED}TIDAK AKTIF${NC}"
