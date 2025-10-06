@@ -1,6 +1,6 @@
 #!/bin/sh
 # Auto Ping Control by juicewrt
-VERSION="v1.3"
+VERSION="v1.3.1"
 
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
@@ -16,10 +16,18 @@ get_target() {
     fi
 }
 
+# Fungsi berhenti manual (tanpa pkill)
+stop_pingtest() {
+    PIDLIST=$(ps | grep pingtest.sh | grep -v grep | awk '{print $1}')
+    if [ -n "$PIDLIST" ]; then
+        echo "$PIDLIST" | xargs kill >/dev/null 2>&1
+    fi
+}
+
 case "$1" in
 start)
     TARGET=$(get_target)
-    if pgrep -f "pingtest.sh" >/dev/null; then
+    if pgrep -f "pingtest.sh" >/dev/null 2>&1; then
         echo "Pingtest sudah berjalan (target: $TARGET)."
     else
         echo "Menjalankan pingtest (target: $TARGET)..."
@@ -29,9 +37,9 @@ start)
     fi
     ;;
 stop)
-    if pgrep -f "pingtest.sh" >/dev/null; then
+    if pgrep -f "pingtest.sh" >/dev/null 2>&1; then
         echo "Menghentikan pingtest..."
-        pkill -f "pingtest.sh"
+        stop_pingtest
         echo "Pingtest dihentikan."
     else
         echo "Pingtest tidak sedang berjalan."
@@ -76,7 +84,6 @@ update)
     echo "[✓] Update selesai! Versi terbaru sudah diinstal."
     ;;
 m)
-    # ======== MENU INTERAKTIF ==========
     RED='\033[0;31m'
     GREEN='\033[0;32m'
     YELLOW='\033[1;33m'
@@ -131,7 +138,7 @@ m)
             5) /root/pingtest-control.sh update; read -p "Tekan Enter..." ;;
             6)
                 echo -e "${YELLOW}Merestart pingtest...${NC}"
-                /root/pingtest-control.sh stop >/dev/null 2>&1
+                stop_pingtest
                 sleep 2
                 /root/pingtest-control.sh start
                 echo -e "${GREEN}Pingtest telah direstart!${NC}"
@@ -151,7 +158,7 @@ m)
                     sed -i "1iTARGET=\"$newtarget\"" /root/pingtest.sh
                     echo -e "${YELLOW}Target diganti ke: ${GREEN}$newtarget${NC}"
                     echo -e "${YELLOW}Merestart pingtest...${NC}"
-                    /root/pingtest-control.sh stop >/dev/null 2>&1
+                    stop_pingtest
                     sleep 2
                     /root/pingtest-control.sh start
                     echo -e "${GREEN}Pingtest aktif dengan target baru!${NC}"
