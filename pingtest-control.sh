@@ -5,6 +5,7 @@ TARGET="xl.co.id"
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
 REPO_URL="https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main"
+PROFILE="/root/.profile"
 
 case "$1" in
     start)
@@ -67,6 +68,9 @@ case "$1" in
         wget -q -O /root/pingtest.sh $REPO_URL/pingtest.sh
         wget -q -O /root/pingtest-control.sh $REPO_URL/pingtest-control.sh
         chmod +x /root/pingtest.sh /root/pingtest-control.sh
+        if ! grep -q "pingtest-control.sh" $PROFILE 2>/dev/null; then
+            echo "alias pingtest='/root/pingtest-control.sh'" >> $PROFILE
+        fi
         echo "[✓] Update selesai! Versi terbaru sudah diinstal."
         ;;
     *)
