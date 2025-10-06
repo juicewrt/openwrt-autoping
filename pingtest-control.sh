@@ -143,7 +143,8 @@ m)
                 echo -ne "${CYAN}Masukkan target baru (contoh: google.com): ${NC}"
                 read newtarget
                 if [ -n "$newtarget" ]; then
-                    sed -i "s|^TARGET=.*|TARGET=\"$newtarget\"|" /root/pingtest.sh
+                    sed -i '/^TARGET=/d' /root/pingtest.sh
+                    sed -i "1iTARGET=\"$newtarget\"" /root/pingtest.sh
                     echo -e "${YELLOW}Target diganti ke: ${GREEN}$newtarget${NC}"
                     echo -e "${YELLOW}Merestart pingtest...${NC}"
                     /root/pingtest-control.sh stop >/dev/null 2>&1
