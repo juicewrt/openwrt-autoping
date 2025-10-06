@@ -25,17 +25,16 @@ fi
 echo "[+] Mengunduh file dari GitHub..."
 wget -q -O /root/pingtest.sh $REPO_URL/pingtest.sh
 wget -q -O /root/pingtest-control.sh $REPO_URL/pingtest-control.sh
-
 chmod +x /root/pingtest.sh /root/pingtest-control.sh
 
 # -------------------------------
-# 3. Tambahkan alias global
+# 3. Tambahkan alias global permanen
 # -------------------------------
 PROFILE="/root/.profile"
-BASHRC="/root/.bashrc"
 ASHRC="/etc/profile"
+BASHRC="/root/.bashrc"
 
-for FILE in $PROFILE $BASHRC $ASHRC; do
+for FILE in $PROFILE $ASHRC $BASHRC; do
     if [ -f "$FILE" ]; then
         if ! grep -q "pingtest-control.sh" "$FILE" 2>/dev/null; then
             echo "alias pingtest='/root/pingtest-control.sh'" >> "$FILE"
@@ -44,13 +43,14 @@ for FILE in $PROFILE $BASHRC $ASHRC; do
     fi
 done
 
-# Pastikan alias langsung aktif di sesi saat ini
-alias pingtest='/root/pingtest-control.sh'
-export PATH=$PATH:/root
-hash -r
+# Tambahkan source otomatis di rc.local biar alias aktif tiap boot
+if ! grep -q ". /root/.profile" /etc/rc.local 2>/dev/null; then
+    sed -i '/exit 0/i . /root/.profile' /etc/rc.local
+    echo "[+] Menambahkan auto-load alias di /etc/rc.local"
+fi
 
 # -------------------------------
-# 4. Tambahkan autostart ke rc.local
+# 4. Tambahkan autostart pingtest
 # -------------------------------
 if ! grep -q "pingtest.sh" /etc/rc.local 2>/dev/null; then
     sed -i '/exit 0/i sleep 20\nscreen -dmS pingtest /root/pingtest.sh' /etc/rc.local
@@ -70,8 +70,8 @@ echo "  pingtest start   -> mulai auto ping"
 echo "  pingtest stop    -> hentikan auto ping"
 echo "  pingtest status  -> lihat status"
 echo "  pingtest check   -> lihat isi log"
+echo "  pingtest m       -> buka menu interaktif"
 echo "  pingtest update  -> perbarui script"
 echo ""
-echo "Script otomatis aktif saat boot (20 detik setelah OpenWRT hidup)"
-echo ""
-echo "[i] Kamu bisa langsung ketik:  pingtest start"
+echo "Alias aktif otomatis tiap reboot ✅"
+echo "Script ping otomatis berjalan 20 detik setelah boot ⚙️"
