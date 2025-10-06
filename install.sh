@@ -2,7 +2,7 @@
 # Installer Auto Ping untuk OpenWRT
 # by ChatGPT x hamdanspotec
 
-REPO_URL="https://raw.githubusercontent.com/hamdanspotec/openwrt-autoping/main"
+REPO_URL="https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main"
 
 echo "[+] Memulai instalasi Auto Ping..."
 
