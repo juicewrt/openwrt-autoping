@@ -1,6 +1,6 @@
 #!/bin/sh
 # Auto Ping Control by juicewrt
-VERSION="v1.3.2"
+VERSION="v1.3.3"
 
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
@@ -18,16 +18,14 @@ get_target() {
 
 # --- Fungsi: hentikan semua proses pingtest + screen ---
 stop_pingtest() {
-    # Hentikan proses pingtest.sh
     PIDLIST=$(ps | grep pingtest.sh | grep -v grep | awk '{print $1}')
     if [ -n "$PIDLIST" ]; then
         echo "$PIDLIST" | xargs kill >/dev/null 2>&1
     fi
-
-    # Tutup sesi screen bernama pingtest jika ada
     if screen -list 2>/dev/null | grep -q "pingtest"; then
         screen -S pingtest -X quit >/dev/null 2>&1
     fi
+    screen -wipe >/dev/null 2>&1
 }
 
 case "$1" in
@@ -90,12 +88,8 @@ update)
     echo "[✓] Update selesai! Versi terbaru sudah diinstal."
     ;;
 m)
-    RED='\033[0;31m'
-    GREEN='\033[0;32m'
-    YELLOW='\033[1;33m'
-    BLUE='\033[1;34m'
-    CYAN='\033[0;36m'
-    NC='\033[0m' # No Color
+    RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'
+    BLUE='\033[1;34m'; CYAN='\033[0;36m'; NC='\033[0m'
 
     while true; do
         clear
@@ -109,7 +103,6 @@ m)
         else
             UPTIME="Tidak diketahui"
         fi
-
         FAIL_COUNT=0
         [ -f $LOG ] && FAIL_COUNT=$(grep -c "GAGAL" $LOG 2>/dev/null)
 
@@ -158,8 +151,7 @@ m)
                 echo -ne "${CYAN}Masukkan target baru (contoh: google.com): ${NC}"
                 read newtarget
                 if [ -n "$newtarget" ]; then
-                    sed -i '/^TARGET=/d' /root/pingtest.sh
-                    sed -i "1iTARGET=\"$newtarget\"" /root/pingtest.sh
+                    sed -i "s|^TARGET=.*|TARGET=\"$newtarget\"|" /root/pingtest.sh
                     echo -e "${YELLOW}Target diganti ke: ${GREEN}$newtarget${NC}"
                     echo -e "${YELLOW}Merestart pingtest...${NC}"
                     stop_pingtest
