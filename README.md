@@ -10,4 +10,4 @@
 
 Salin & jalankan perintah ini di terminal OpenWRT kamu:
 ```bash
-wget -O - https://raw.githubusercontent.com/hamdanspotec/openwrt-autoping/main/install.sh | sh
+wget -O - https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main/install.sh | sh
