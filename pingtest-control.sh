@@ -4,7 +4,7 @@
 TARGET="xl.co.id"
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
-REPO_URL="https://raw.githubusercontent.com/hamdanspotec/openwrt-autoping/main"
+REPO_URL="https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main"
 
 case "$1" in
     start)
