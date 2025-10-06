@@ -1,6 +1,11 @@
 #!/bin/sh
-# Auto Ping Ringan untuk OpenWRT
-# Target default
+# Auto Ping Ringan untuk OpenWRT (juicewrt)
+# Versi: v1.3.2
+# ------------------------------------------
+# Script ini akan melakukan ping terus-menerus ke target,
+# menulis log di /tmp/pingstatus.txt, dan otomatis membersihkan
+# log yang sudah lebih dari 24 jam.
+
 TARGET="xl.co.id"
 LOG="/tmp/pingstatus.txt"
 INTERVAL=5
@@ -16,6 +21,7 @@ if [ -f $LOG ]; then
     fi
 fi
 
+# Loop utama ping
 while true; do
     if ping -c 1 -W 2 $TARGET >/dev/null 2>&1; then
         echo "$(date '+%H:%M:%S') OK - $TARGET aktif" >> $LOG
