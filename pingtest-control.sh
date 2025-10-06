@@ -1,26 +1,32 @@
 #!/bin/sh
 # Auto Ping Control by juicewrt
-VERSION="v1.3.1"
+VERSION="v1.3.2"
 
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
 REPO_URL="https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main"
 PROFILE="/root/.profile"
 
-# Fungsi bantu: ambil target dari pingtest.sh
+# --- Fungsi bantu: ambil target dari pingtest.sh ---
 get_target() {
-    if grep -q '^TARGET=' /root/pingtest.sh; then
+    if grep -q '^TARGET=' /root/pingtest.sh 2>/dev/null; then
         grep '^TARGET=' /root/pingtest.sh | cut -d'"' -f2
     else
         echo "xl.co.id"
     fi
 }
 
-# Fungsi berhenti manual (tanpa pkill)
+# --- Fungsi: hentikan semua proses pingtest + screen ---
 stop_pingtest() {
+    # Hentikan proses pingtest.sh
     PIDLIST=$(ps | grep pingtest.sh | grep -v grep | awk '{print $1}')
     if [ -n "$PIDLIST" ]; then
         echo "$PIDLIST" | xargs kill >/dev/null 2>&1
+    fi
+
+    # Tutup sesi screen bernama pingtest jika ada
+    if screen -list 2>/dev/null | grep -q "pingtest"; then
+        screen -S pingtest -X quit >/dev/null 2>&1
     fi
 }
 
@@ -94,10 +100,8 @@ m)
     while true; do
         clear
         CURRENT_TARGET=$(get_target)
-
         PID=$(pgrep -f "pingtest.sh")
         [ -n "$PID" ] && STATUS="${GREEN}AKTIF${NC}" || STATUS="${RED}TIDAK AKTIF${NC}"
-
         [ -f $LOG ] && LAST=$(tail -n 1 $LOG) || LAST="Belum ada log"
 
         if command -v uptime >/dev/null 2>&1; then
