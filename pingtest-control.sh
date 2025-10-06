@@ -19,7 +19,6 @@ start)
         echo "Pingtest aktif."
     fi
     ;;
-
 stop)
     if pgrep -f "pingtest.sh" >/dev/null; then
         echo "Menghentikan pingtest..."
@@ -29,7 +28,6 @@ stop)
         echo "Pingtest tidak sedang berjalan."
     fi
     ;;
-
 status)
     echo "[ Auto Ping Status ]"
     PID=$(pgrep -f "pingtest.sh")
@@ -42,7 +40,6 @@ status)
         [ -f $LOG ] && echo "Log terakhir: $(tail -n 1 $LOG)" || echo "Belum ada log."
     fi
     ;;
-
 check)
     echo "[ Auto Ping Status + Log ]"
     PID=$(pgrep -f "pingtest.sh")
@@ -55,7 +52,6 @@ check)
         echo "Belum ada log."
     fi
     ;;
-
 update)
     echo "[+] Memperbarui script dari GitHub..."
     wget -q -O /root/pingtest.sh $REPO_URL/pingtest.sh
@@ -66,7 +62,6 @@ update)
     fi
     echo "[✓] Update selesai! Versi terbaru sudah diinstal."
     ;;
-
 m)
     # ======== MENU INTERAKTIF ==========
     RED='\033[0;31m'
