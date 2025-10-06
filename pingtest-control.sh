@@ -1,19 +1,28 @@
 #!/bin/sh
 # Auto Ping Control by juicewrt
-VERSION="v1.2"
+VERSION="v1.3"
 
-TARGET="xl.co.id"
 LOG="/tmp/pingstatus.txt"
 SCRIPT="/root/pingtest.sh"
 REPO_URL="https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main"
 PROFILE="/root/.profile"
 
+# Fungsi bantu: ambil target dari pingtest.sh
+get_target() {
+    if grep -q '^TARGET=' /root/pingtest.sh; then
+        grep '^TARGET=' /root/pingtest.sh | cut -d'"' -f2
+    else
+        echo "xl.co.id"
+    fi
+}
+
 case "$1" in
 start)
+    TARGET=$(get_target)
     if pgrep -f "pingtest.sh" >/dev/null; then
-        echo "Pingtest sudah berjalan."
+        echo "Pingtest sudah berjalan (target: $TARGET)."
     else
-        echo "Menjalankan pingtest..."
+        echo "Menjalankan pingtest (target: $TARGET)..."
         screen -dmS pingtest $SCRIPT
         sleep 1
         echo "Pingtest aktif."
@@ -31,19 +40,23 @@ stop)
 status)
     echo "[ Auto Ping Status ]"
     PID=$(pgrep -f "pingtest.sh")
+    TARGET=$(get_target)
     if [ -n "$PID" ]; then
         echo "Process  : Aktif (PID $PID)"
         echo "Target   : $TARGET"
         [ -f $LOG ] && echo "Terakhir : $(tail -n 1 $LOG)" || echo "Log belum tersedia."
     else
         echo "Process  : Tidak aktif!"
+        echo "Target   : $TARGET"
         [ -f $LOG ] && echo "Log terakhir: $(tail -n 1 $LOG)" || echo "Belum ada log."
     fi
     ;;
 check)
     echo "[ Auto Ping Status + Log ]"
     PID=$(pgrep -f "pingtest.sh")
+    TARGET=$(get_target)
     [ -n "$PID" ] && echo "Process  : Aktif (PID $PID)" || echo "Process  : Tidak aktif!"
+    echo "Target   : $TARGET"
     if [ -f $LOG ]; then
         echo "---------------------------------------"
         echo "Log isi:"
@@ -73,11 +86,7 @@ m)
 
     while true; do
         clear
-        if grep -q '^TARGET=' /root/pingtest.sh; then
-            CURRENT_TARGET=$(grep '^TARGET=' /root/pingtest.sh | cut -d'"' -f2)
-        else
-            CURRENT_TARGET="xl.co.id"
-        fi
+        CURRENT_TARGET=$(get_target)
 
         PID=$(pgrep -f "pingtest.sh")
         [ -n "$PID" ] && STATUS="${GREEN}AKTIF${NC}" || STATUS="${RED}TIDAK AKTIF${NC}"
