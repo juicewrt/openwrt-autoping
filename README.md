@@ -1,7 +1,7 @@
 <h1 align="center">⚡ Auto Ping for OpenWRT ⚡</h1>
 <p align="center">
   <b>Script ringan untuk menjaga koneksi tetap aktif & memantau ping otomatis.</b><br>
-  <i>Developed by <a href="https://github.com/hamdanspotec" target="_blank">hamdanspotec</a></i>
+  <i>Developed by <a href="https://github.com/hamdanspotec" target="_blank">juicewrt</a></i>
 </p>
 
 ---
