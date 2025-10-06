@@ -29,19 +29,24 @@ wget -q -O /root/pingtest-control.sh $REPO_URL/pingtest-control.sh
 chmod +x /root/pingtest.sh /root/pingtest-control.sh
 
 # -------------------------------
-# 3. Tambahkan alias ke .profile
+# 3. Tambahkan alias global
 # -------------------------------
 PROFILE="/root/.profile"
+BASHRC="/root/.bashrc"
+ASHRC="/etc/profile"
 
-if ! grep -q "pingtest-control.sh" $PROFILE 2>/dev/null; then
-    echo "alias pingtest='/root/pingtest-control.sh'" >> $PROFILE
-    echo "[+] Alias 'pingtest' ditambahkan ke $PROFILE"
-else
-    echo "[✓] Alias 'pingtest' sudah ada."
-fi
+for FILE in $PROFILE $BASHRC $ASHRC; do
+    if [ -f "$FILE" ]; then
+        if ! grep -q "pingtest-control.sh" "$FILE" 2>/dev/null; then
+            echo "alias pingtest='/root/pingtest-control.sh'" >> "$FILE"
+            echo "[+] Alias 'pingtest' ditambahkan ke $FILE"
+        fi
+    fi
+done
 
-# Aktifkan alias langsung tanpa reboot
-. $PROFILE 2>/dev/null || source $PROFILE 2>/dev/null
+# Pastikan alias langsung aktif di sesi saat ini
+alias pingtest='/root/pingtest-control.sh'
+export PATH=$PATH:/root
 hash -r
 
 # -------------------------------
@@ -67,4 +72,6 @@ echo "  pingtest status  -> lihat status"
 echo "  pingtest check   -> lihat isi log"
 echo "  pingtest update  -> perbarui script"
 echo ""
-echo "Script akan otomatis aktif saat boot (20 detik setelah OpenWRT hidup)"
+echo "Script otomatis aktif saat boot (20 detik setelah OpenWRT hidup)"
+echo ""
+echo "[i] Kamu bisa langsung ketik:  pingtest start"
