@@ -38,4 +38,4 @@ Dengan versi baru ini, sistem **tidak lagi restart OpenClash atau injek** — ha
 
 ## ⚙️ Instalasi
 ```bash
-wget -O - https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main/install.sh | sh
+wget -qO- https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main/install.sh | sh
