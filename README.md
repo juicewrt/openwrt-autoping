@@ -38,6 +38,4 @@ Dengan versi baru ini, sistem **tidak lagi restart OpenClash atau injek** — ha
 
 ## ⚙️ Instalasi
 ```bash
-wget -O /root/pingtest-control.sh https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main/pingtest-control.sh
-wget -O /root/pingtest.sh https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main/pingtest.sh
-chmod +x /root/pingtest-control.sh /root/pingtest.sh
+wget -O - https://raw.githubusercontent.com/juicewrt/openwrt-autoping/main/install.sh | sh
